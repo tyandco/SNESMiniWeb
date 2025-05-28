@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Game Carousel Test</title>
+<style>
+  .game-carousel {
+    position: relative; /* or absolute/fixed if needed */
+    z-index: 30;
+    transform: translate(0%, 99%);
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 20px;
+    padding: 20px;
+    scrollbar-width: none;
+  }
+  .game-carousel::-webkit-scrollbar {
+    display: none;
+  }
+.game-slot {
+    flex: 0 0 auto;
+    width: 200px;
+    height: 220px;
+    background-image: url('gameslot.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+  .game-cover img {
+    width: 100%;
+    border-radius: 8px;
+  }
+  .game-info {
+    text-align: center;
+  }
+  .game-title {
+    font-weight: bold;
+    margin: 10px 0 6px;
+  }
+  .game-info a {
+    text-decoration: none;
+    background: #555;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    transition: background 0.2s;
+  }
+  .game-info a:hover {
+    background: #777;
+  }
+</style>
+</head>
+<body>
+
+<div class="game-carousel" id="gameCarousel"></div>
+
+<script>
+  const games = [
+    { title: "Super Mario World", cover: "https://via.placeholder.com/200x160?text=SMW", rom: "#" },
+    { title: "Zelda: A Link to the Past", cover: "https://via.placeholder.com/200x160?text=Zelda", rom: "#" },
+    { title: "Donkey Kong Country", cover: "https://via.placeholder.com/200x160?text=DKC", rom: "#" },
+  ];
+
+  const carousel = document.getElementById('gameCarousel');
+
+  function createGameSlot(game) {
+    const slot = document.createElement('div');
+    slot.classList.add('game-slot');
+    slot.innerHTML = `
+      <div class="game-cover">
+        <img src="${game.cover}" alt="${game.title}">
+      </div>
+      <div class="game-info">
+        <p class="game-title">${game.title}</p>
+        <a href="${game.rom}" download>Download ROM</a>
+      </div>
+    `;
+    return slot;
+  }
+
+  function populateCarousel() {
+    carousel.innerHTML = '';
+    games.forEach(game => {
+      carousel.appendChild(createGameSlot(game));
+    });
+    games.forEach(game => {
+      carousel.appendChild(createGameSlot(game));
+    });
+  }
+
+  populateCarousel();
+
+  carousel.scrollLeft = 0;
+
+  carousel.addEventListener('scroll', () => {
+    if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
+      carousel.scrollLeft = 0;
+    }
+  });
+</script>
+
+</body>
+</html>
