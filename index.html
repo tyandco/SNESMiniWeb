@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,516;1,516&display=swap" rel="stylesheet">
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SNES Mini Menu</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    overflow-x: hidden; /* prevent horizontal scrollbar */
+  }
+
+/* Container holds scrolling images and overlay */
+.scrolling-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* full viewport height */
+    overflow: hidden;
+    background: #1e1a17; /* fallback background */
+}
+
+/* The scrolling strip with 2 copies of image for seamless scroll */
+.scrolling-strip {
+    display: flex;
+    width: 200%; /* two images side by side */
+    height: 100vh;
+    animation: scroll-left 35s linear infinite;
+}
+
+.scrolling-strip img {
+    width: 50%; /* each image takes half the container width */
+    height: 100vh;
+    object-fit: cover; /* stretch to fill container while cropping */
+    flex-shrink: 0;
+    filter: blur(5px);
+}
+
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+/* Overlay bars on top */
+.overlay-bars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+    object-fit: fill; /* stretch to fill */
+}
+  /* Centered text */
+  .centered-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20; /* on top of overlay bars */
+    color: white;
+    width: 80%;
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    pointer-events: none; /* don't block interactions */
+    text-shadow: 0 0 5px black; /* optional, improves visibility */
+    font-family: 'Noto Sans', sans-serif;
+  }
+</style>
+</head>
+<body>
+
+<div class="scrolling-wrapper">
+  <div class="scrolling-strip">
+    <img src="nintendo-classic-mini-uhd-4k-wallpaper.jpg" alt="Scrolling Background" />
+    <img src="nintendo-classic-mini-uhd-4k-wallpaper.jpg" alt="Scrolling Background" />
+  </div>
+
+  <img src="snesmini topandbottom.png" alt="Overlay Bars" class="overlay-bars" />
+    <div class="centered-text">
+    The website is still in progress! This is what I made so far!
+  </div>
+</div>
+<audio id="bg-music" preload="auto" style="display:none;">
+  <source src="02. Main Menu (SNES Classic Edition).mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const audio = document.getElementById('bg-music');
+  const loopStart = 2;
+  let loopEnd = 52.108;
+  let started = false;
+
+  audio.addEventListener('loadedmetadata', () => {
+    loopEnd = audio.duration;
+    console.log('Audio duration:', loopEnd);
+  });
+
+  function startAudio() {
+    if (started) return;
+    started = true;
+    audio.currentTime = 0;
+    audio.play().then(() => {
+      console.log('Playback started');
+    }).catch(e => console.error('Playback failed:', e));
+  }
+
+  window.addEventListener('click', startAudio, { once: true });
+  window.addEventListener('keydown', startAudio, { once: true });
+
+  // More precise looping with a short interval check
+  audio.addEventListener('timeupdate', () => {
+    if (audio.currentTime >= loopEnd - 0.05) {
+      // Pause, reset time, then play again to ensure seamless loop
+      audio.pause();
+      audio.currentTime = loopStart;
+      audio.play().catch(e => console.error('Loop playback failed:', e));
+    }
+  });
+</script>
+
+
+
+<link rel="stylesheet" href="style.css">
+</body>
+</html>
