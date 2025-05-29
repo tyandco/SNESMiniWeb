@@ -572,29 +572,33 @@ function playSound(sound) {
     container.style.zIndex = '99999';
     container.style.display = 'flex';
     container.style.flexDirection = 'column';
-    container.style.alignItems = 'center';
-    container.style.justifyContent = 'center';
+    container.style.alignItems = 'stretch';
+    container.style.justifyContent = 'stretch';
+    container.style.padding = '0';
 
     const emuDivWrapper = document.createElement('div');
     emuDivWrapper.style.background = '#111';
-    emuDivWrapper.style.borderRadius = '16px';
-    emuDivWrapper.style.boxShadow = '0 8px 32px #000b';
+    emuDivWrapper.style.borderRadius = '0';
+    emuDivWrapper.style.boxShadow = 'none';
     emuDivWrapper.style.display = 'flex';
-    emuDivWrapper.style.alignItems = 'center';
-    emuDivWrapper.style.justifyContent = 'center';
+    emuDivWrapper.style.alignItems = 'stretch';
+    emuDivWrapper.style.justifyContent = 'stretch';
     emuDivWrapper.style.padding = '0';
     emuDivWrapper.style.marginTop = '0';
-    emuDivWrapper.style.width = '672px';
-    emuDivWrapper.style.height = '504px';
-    emuDivWrapper.style.maxWidth = '96vw';
-    emuDivWrapper.style.maxHeight = '90vh';
+    emuDivWrapper.style.width = '100vw';
+    emuDivWrapper.style.height = '100vh';
+    emuDivWrapper.style.maxWidth = '100vw';
+    emuDivWrapper.style.maxHeight = '100vh';
 
     const emuDiv = document.createElement('div');
     emuDiv.id = 'emujs-game';
-    emuDiv.style.width = '672px';
-    emuDiv.style.height = '504px';
-    emuDiv.style.maxWidth = '96vw';
-    emuDiv.style.maxHeight = '90vh';
+    emuDiv.style.width = '100vw';
+    emuDiv.style.height = '100vh';
+    emuDiv.style.maxWidth = '100vw';
+    emuDiv.style.maxHeight = '100vh';
+    emuDiv.style.display = 'flex';
+    emuDiv.style.alignItems = 'stretch';
+    emuDiv.style.justifyContent = 'stretch';
 
     // Create the iframe as EmulatorJS does
     const iframe = document.createElement('iframe');
@@ -602,11 +606,12 @@ function playSound(sound) {
     iframe.width = '100%';
     iframe.height = '100%';
     iframe.frameBorder = 'no';
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
-    iframe.style.margin = '0px';
-    iframe.style.padding = '0px';
+    iframe.style.width = '100vw';
+    iframe.style.height = '100vh';
+    iframe.style.margin = '0';
+    iframe.style.padding = '0';
     iframe.style.userSelect = 'none';
+    iframe.style.border = 'none';
     iframe.scrolling = 'no';
     iframe.allowFullscreen = true;
     iframe.setAttribute('webkitallowfullscreen', 'true');
@@ -646,6 +651,25 @@ function playSound(sound) {
     scriptLoader.id = 'emujs-loader';
     scriptLoader.crossOrigin = 'anonymous';
     document.body.appendChild(scriptLoader);
+
+    // Attempt to remove ad popups after emulator loads
+    setTimeout(() => {
+      // Remove any iframes or divs that look like ads inside the overlay
+      const adSelectors = [
+        'iframe[src*="ads"]',
+        'iframe[src*="adservice"]',
+        'iframe[src*="doubleclick"]',
+        'iframe[src*="googlesyndication"]',
+        'div[id*="ejs-ads"]',
+        'div[class*="ejs-ads"]',
+        'div[style*="z-index: 2147483647"]',
+        'div[style*="position: fixed"]',
+        'div[style*="position: absolute"]'
+      ];
+      adSelectors.forEach(sel => {
+        document.querySelectorAll(sel).forEach(el => el.remove());
+      });
+    }, 2000);
   }
 
   // Update centering logic to use selectedIndex
