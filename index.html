@@ -557,6 +557,7 @@ function playSound(sound) {
 
     // Use local .zip ROM if available, otherwise fallback to .smc/.sfc
     let romPath = localZipRoms[gameTitle] || gameRom;
+    // EmulatorJS expects forward slashes and no escaped characters in URLs
     romPath = romPath.replace(/\\/g, '/');
 
     // EmulatorJS embed (bsnes core)
@@ -571,33 +572,29 @@ function playSound(sound) {
     container.style.zIndex = '99999';
     container.style.display = 'flex';
     container.style.flexDirection = 'column';
-    container.style.alignItems = 'stretch';
-    container.style.justifyContent = 'stretch';
-    container.style.padding = '0';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
 
     const emuDivWrapper = document.createElement('div');
     emuDivWrapper.style.background = '#111';
-    emuDivWrapper.style.borderRadius = '0';
-    emuDivWrapper.style.boxShadow = 'none';
+    emuDivWrapper.style.borderRadius = '16px';
+    emuDivWrapper.style.boxShadow = '0 8px 32px #000b';
     emuDivWrapper.style.display = 'flex';
-    emuDivWrapper.style.alignItems = 'stretch';
-    emuDivWrapper.style.justifyContent = 'stretch';
+    emuDivWrapper.style.alignItems = 'center';
+    emuDivWrapper.style.justifyContent = 'center';
     emuDivWrapper.style.padding = '0';
     emuDivWrapper.style.marginTop = '0';
-    emuDivWrapper.style.width = '100vw';
-    emuDivWrapper.style.height = '100vh';
-    emuDivWrapper.style.maxWidth = '100vw';
-    emuDivWrapper.style.maxHeight = '100vh';
+    emuDivWrapper.style.width = '800px';
+    emuDivWrapper.style.height = '600px';
+    emuDivWrapper.style.maxWidth = '96vw';
+    emuDivWrapper.style.maxHeight = '90vh';
 
     const emuDiv = document.createElement('div');
     emuDiv.id = 'emujs-game';
-    emuDiv.style.width = '100vw';
-    emuDiv.style.height = '100vh';
-    emuDiv.style.maxWidth = '100vw';
-    emuDiv.style.maxHeight = '100vh';
-    emuDiv.style.display = 'flex';
-    emuDiv.style.alignItems = 'stretch';
-    emuDiv.style.justifyContent = 'stretch';
+    emuDiv.style.width = '800px';
+    emuDiv.style.height = '600px';
+    emuDiv.style.maxWidth = '96vw';
+    emuDiv.style.maxHeight = '90vh';
 
     // Create the iframe as EmulatorJS does
     const iframe = document.createElement('iframe');
@@ -605,12 +602,11 @@ function playSound(sound) {
     iframe.width = '100%';
     iframe.height = '100%';
     iframe.frameBorder = 'no';
-    iframe.style.width = '100vw';
-    iframe.style.height = '100vh';
-    iframe.style.margin = '0';
-    iframe.style.padding = '0';
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.margin = '0px';
+    iframe.style.padding = '0px';
     iframe.style.userSelect = 'none';
-    iframe.style.border = 'none';
     iframe.scrolling = 'no';
     iframe.allowFullscreen = true;
     iframe.setAttribute('webkitallowfullscreen', 'true');
@@ -639,7 +635,6 @@ function playSound(sound) {
       window.EJS_mouse = false;
       window.EJS_multitap = false;
       window.EJS_startOnLoaded = true;
-      window.EJS_autostart = true;
       window.EJS_pathtodata = 'https://www.emulatorjs.com/data/';
     `;
     document.body.appendChild(scriptVars);
@@ -713,6 +708,13 @@ function playSound(sound) {
       }
       updateTitleBar(games[selectedIndex]);
       playSound(soundScroll);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      playSound(soundClick);
+      setTimeout(() => {
+        startEmulation(games[selectedIndex].rom, games[selectedIndex].title);
+      }, 120);
     }
   });
 </script>
