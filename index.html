@@ -123,18 +123,19 @@
     padding: 10px 2vw; /* Less padding on small screens */
   }
   .game-slot {
-    width: 180px;
-    height: 180px;
+    /* Responsive sizes for small screens */
+    width: clamp(150px, 25vw, 300px);
+    height: clamp(160px, 27vw, 320px);
     padding: 10px;
   }
 }
 
 .game-slot {
+  /* Responsive game slot dimensions */
   flex: 0 0 auto;
-  width: 260px;   /* bigger width */
-  height: 280px;  /* bigger height */
-  /* Removed background-image settings */
-  padding: 20px;
+  width: clamp(150px, 20vw, 300px);
+  height: clamp(160px, 22vw, 320px);
+  padding: 10px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -143,7 +144,7 @@
   position: relative;
   color: white;
   transition: transform 0.3s ease;
-  transform: scale(0.9); /* removed rotation */
+  transform: scale(0.9);
   cursor: pointer; /* Added cursor pointer */
 }
 
@@ -187,19 +188,21 @@
 }
 
 .game-cover {
+  /* Center the game cover within the slot */
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 25px;
+  margin: 20px auto auto auto;  /* added negative top margin to lift cover */
   width: 100%;
-  height: 370px; /* set a fixed height for vertical centering */
+  height: 70%; /* Adjust based on slot scaling */
   box-sizing: border-box;
+  position: relative;
   z-index: 2;
 }
 
 .game-cover img {
   max-width: 100%;
-  max-height: 370px;
+  max-height: 100%; /* Ensure image scales within container */
   display: block;
   object-fit: contain;
   z-index: 3;
@@ -457,7 +460,7 @@ function playSound(sound) {
     slot.tabIndex = 0;
     slot.innerHTML = `
       <div class="game-bg"></div>
-      <div class="game-cover" style="margin-top:-10px;">
+      <div class="game-cover">
         <img src="${game.cover}" alt="${game.title}">
       </div>
       <div class="game-info"></div>
