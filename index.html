@@ -233,39 +233,46 @@
 .title-bar {
   position: fixed;
   top: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100vw;
-  height: 300px;
+  max-width: 100vw;
+  min-width: 100vw;
+  height: 90px; /* Further reduced height */
   color: #000;
-  font-size: 2.2em;
+  font-size: 1.3em; /* Smaller font */
   font-weight: normal;
   text-align: center;
-  line-height: 258px;
+  line-height: 90px; /* Match new height */
   z-index: 10000;
   letter-spacing: -0.02em;
   font-family: 'Noto Sans', sans-serif;
+  box-sizing: border-box;
+  padding: 0;
 }
 
 /* New game title bar styles */
 .gametitle-bar {
   position: absolute;
-  top: 8vw; /* Responsive distance from top, scales with viewport width */
+  top: 8vw;
   left: 50%;
   transform: translateX(-50%);
-  width: 70vw;
-  max-width: 70vw;
-  height: 6vw;
-  max-height: 80px;
-  min-height: 40px;
+  width: 80vw;
+  max-width: 80vw;
+  height: 7vw;
+  max-height: 90px;
+  min-height: 44px;
   background: url('gametitlebar.png') center center no-repeat;
-  background-size: contain;
+  background-size: 100% 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 21;
   pointer-events: none;
   box-sizing: border-box;
-  padding: 0 8vw;
+  padding: 0 0.5vw;
+  image-rendering: pixelated;
+  filter: contrast(1.2) brightness(1.1) saturate(1.3) grayscale(0.15);
 }
 .gametitle-bar .game-title-text {
   color: #000;
@@ -273,7 +280,7 @@
   font-family: "Inter", sans-serif;
   font-weight: 400;
   text-align: center;
-  width: 90%;
+  width: 96%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -281,11 +288,11 @@
 }
 @media (max-width: 700px) {
   .gametitle-bar {
-    width: 94vw;
-    max-width: 94vw;
-    height: 12vw;
-    min-height: 32px;
-    padding: 0 2vw;
+    width: 100vw;
+    max-width: 100vw;
+    height: 13vw;
+    min-height: 36px;
+    padding: 0 0.5vw;
   }
   .gametitle-bar .game-title-text {
     font-size: clamp(1em, 4vw, 1.8em);
@@ -399,7 +406,19 @@ function playSound(sound) {
     { title: "Kirby Super Star", cover: "images/Kirby Super Star (USA).png", rom: "roms/Kirby Super Star (U) [!].zip" },
     { title: "Kirby's Dream Land 3", cover: "images/Kirby's Dream Land 3 (USA).png", rom: "roms/Kirby's Dream Land 3 (U).zip" },
     { title: "Star Fox", cover: "images/Star Fox (USA).png", rom: "roms/Star Fox (U) (V1.2) [!].zip" },
-    { title: "Star Fox 2", cover: "images/Star Fox 2 (USA).png", rom: "roms/Star Fox 2 (USA).zip" }
+    { title: "Star Fox 2", cover: "images/Star Fox 2 (USA).png", rom: "roms/Star Fox 2 (USA).zip" },
+    { title: "Contra III - The Alien Wars", cover: "images/Contra III - The Alien Wars (USA).png", rom: "roms/Contra III - The Alien Wars (U) [!].zip" },
+    { title: "EarthBound", cover: "images/EarthBound (USA).png", rom: "roms/Earthbound (U) [!].zip" },
+    { title: "Final Fantasy III", cover: "images/Final Fantasy III (USA).png", rom: "roms/Final Fantasy III (U) (V1.1) [!].zip" },
+    { title: "Mega Man X", cover: "images/Mega Man X (USA).png", rom: "roms/Mega Man X (U) (V1.1) [!].zip" },
+    { title: "Secret of Mana", cover: "images/Secret of Mana (USA).png", rom: "roms/Secret of Mana (U) [!].zip" },
+    { title: "Super Castlevania IV", cover: "images/Super Castlevania IV (USA).png", rom: "roms/Super Castlevania IV (U) [!].zip" },
+    { title: "Super Ghouls 'n Ghosts", cover: "images/Super Ghouls 'n Ghosts (USA).png", rom: "roms/Super Ghouls 'N Ghosts (U) [!].zip" },
+    { title: "Super Mario Kart", cover: "images/Super Mario Kart (USA).png", rom: "roms/Super Mario Kart (U) [!].zip" },
+    { title: "Super Mario RPG - Legend of the Seven Stars", cover: "images/Super Mario RPG - Legend of the Seven Stars (USA).png", rom: "roms/Super Mario RPG - Legend of the Seven Stars (U) [!].zip" },
+    { title: "Super Mario World 2 - Yoshi's Island", cover: "images/Super Mario World 2 - Yoshi's Island (USA).png", rom: "roms/Super Mario World 2 - Yoshi's Island (U) (M3) (V1.1).zip" },
+    { title: "Super Metroid", cover: "images/Super Metroid (USA).png", rom: "roms/Super Metroid (USA, Europe) (En,Ja) (Virtual Console, Classic Mini, Switch Online).zip" },
+    { title: "Super Punch-Out!!", cover: "images/Super Punch-Out!! (USA).png", rom: "roms/Super Punch-Out!! (U) [!].zip" }
   ];
 
   const carousel = document.getElementById('gameCarousel');
@@ -407,40 +426,27 @@ function playSound(sound) {
   const gametitleBar = document.querySelector('.gametitle-bar .game-title-text');
   let selectedIndex = 0;
 
-  function scrollSelectedIntoView() {
-    const slots = document.querySelectorAll('.game-slot');
-    if (slots[selectedIndex]) {
-      const slot = slots[selectedIndex];
-      // Get the slot's position relative to the carousel's scroll area
-      const slotRect = slot.getBoundingClientRect();
-      const carouselRect = carousel.getBoundingClientRect();
-      // Calculate the slot's center relative to the carousel
-      const slotCenter = slotRect.left - carouselRect.left + carousel.scrollLeft + slotRect.width / 2;
-      const carouselCenter = carousel.clientWidth / 2;
-      // Set scrollLeft so the slot is centered
-      carousel.scrollLeft = slotCenter - carouselCenter;
-    }
-  }
-
-  function updateSelectedSlot() {
-    const slots = document.querySelectorAll('.game-slot');
-    slots.forEach((slot, i) => {
-      if (i % games.length === selectedIndex) {
-        slot.classList.add('selected');
-      } else {
-        slot.classList.remove('selected');
-      }
+  // --- Infinite Carousel Setup ---
+  // REMOVE illusion: only render the games array once
+  function populateCarousel() {
+    carousel.innerHTML = '';
+    games.forEach((game, i) => {
+      const slot = createGameSlot(game, i);
+      carousel.appendChild(slot);
     });
-    scrollSelectedIntoView();
-  }
-
-  function updateTitleBar(game) {
-    if (titleBar && game) {
-      titleBar.textContent = 'SNES Mini Menu';
-    }
-    if (gametitleBar && game) {
-      gametitleBar.textContent = game.title;
-    }
+    setTimeout(() => {
+      const slots = document.querySelectorAll('.game-slot');
+      if (slots[0]) {
+        const slot = slots[0];
+        const slotRect = slot.getBoundingClientRect();
+        const carouselRect = carousel.getBoundingClientRect();
+        const slotCenter = slotRect.left - carouselRect.left + carousel.scrollLeft + slotRect.width / 2;
+        const carouselCenter = carousel.clientWidth / 2;
+        carousel.scrollLeft = slotCenter - carouselCenter;
+      }
+    }, 0);
+    selectedIndex = 0;
+    updateTitleBar(games[0]);
     updateSelectedSlot();
   }
 
@@ -500,32 +506,64 @@ function playSound(sound) {
     return slot;
   }
 
-  function populateCarousel() {
-    carousel.innerHTML = '';
-    games.forEach((game, i) => carousel.appendChild(createGameSlot(game, i)));
-    updateTitleBar(games[0]);
+  // Update centering logic to use selectedIndex
+  function scrollSelectedIntoView() {
+    const slots = document.querySelectorAll('.game-slot');
+    if (slots[selectedIndex]) {
+      const slot = slots[selectedIndex];
+      const slotRect = slot.getBoundingClientRect();
+      const carouselRect = carousel.getBoundingClientRect();
+      const slotCenter = slotRect.left - carouselRect.left + carousel.scrollLeft + slotRect.width / 2;
+      const carouselCenter = carousel.clientWidth / 2;
+      carousel.scrollLeft = slotCenter - carouselCenter;
+    }
+  }
+
+  // Update updateSelectedSlot to use selectedIndex % games.length for .selected
+  function updateSelectedSlot() {
+    const slots = document.querySelectorAll('.game-slot');
+    slots.forEach((slot, i) => {
+      if (i === selectedIndex) {
+        slot.classList.add('selected');
+      } else {
+        slot.classList.remove('selected');
+      }
+    });
+    scrollSelectedIntoView();
+  }
+
+  function updateTitleBar(game) {
+    if (titleBar && game) {
+      titleBar.textContent = 'SNES Mini Menu';
+    }
+    if (gametitleBar && game) {
+      gametitleBar.textContent = game.title;
+    }
     updateSelectedSlot();
   }
 
   populateCarousel();
   setTimeout(() => scrollSelectedIntoView(), 0); // Always scroll to the selected game on load
 
-  // Infinite scroll illusion for carousel
-  carousel.scrollLeft = 0;
-  carousel.addEventListener('scroll', () => {
-    if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
-      carousel.scrollLeft = 0;
-    }
-  });
   // Keyboard navigation for carousel
   document.addEventListener('keydown', (e) => {
+    const slots = document.querySelectorAll('.game-slot');
     if (e.key === 'ArrowRight') {
-      selectedIndex = (selectedIndex + 1) % games.length;
+      selectedIndex++;
+      if (selectedIndex >= games.length) {
+        // If we go past the end of the array, loop back to the start
+        selectedIndex = 0;
+        scrollSelectedIntoView();
+      }
       updateTitleBar(games[selectedIndex]);
-      // Only focus in scrollSelectedIntoView
       playSound(soundScroll);
     } else if (e.key === 'ArrowLeft') {
-      selectedIndex = (selectedIndex - 1 + games.length) % games.length;
+      selectedIndex--;
+      if (selectedIndex < 0) {
+        // If we go before the start of the array, loop to the end
+        selectedIndex = games.length - 1;
+        scrollSelectedIntoView();
+      }
       updateTitleBar(games[selectedIndex]);
       playSound(soundScroll);
     }
