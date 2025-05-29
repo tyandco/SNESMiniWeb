@@ -557,7 +557,6 @@ function playSound(sound) {
 
     // Use local .zip ROM if available, otherwise fallback to .smc/.sfc
     let romPath = localZipRoms[gameTitle] || gameRom;
-    // EmulatorJS expects forward slashes and no escaped characters in URLs
     romPath = romPath.replace(/\\/g, '/');
 
     // EmulatorJS embed (bsnes core)
@@ -640,6 +639,7 @@ function playSound(sound) {
       window.EJS_mouse = false;
       window.EJS_multitap = false;
       window.EJS_startOnLoaded = true;
+      window.EJS_autostart = true;
       window.EJS_pathtodata = 'https://www.emulatorjs.com/data/';
     `;
     document.body.appendChild(scriptVars);
@@ -651,6 +651,19 @@ function playSound(sound) {
     scriptLoader.id = 'emujs-loader';
     scriptLoader.crossOrigin = 'anonymous';
     document.body.appendChild(scriptLoader);
+
+    // Fallback: force game load via postMessage if not started after 2.5s
+    setTimeout(() => {
+      const emuFrame = document.getElementById('ejs-content-frame');
+      if (emuFrame && emuFrame.contentWindow) {
+        emuFrame.contentWindow.postMessage({
+          type: 'EJS_loadGame',
+          url: romPath,
+          core: 'bsnes',
+          autostart: true
+        }, '*');
+      }
+    }, 2500);
 
     // Attempt to remove ad popups after emulator loads
     setTimeout(() => {
