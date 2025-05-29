@@ -27,10 +27,13 @@ The website includes games you would find on a stock SNES Mini, here's the list:
   
 ## Navigation Controls
 Left Arrow and Right Arrow/Mouse: Scroll through the games / Select game
+
 Enter/LMB: Launch selected game
+
 ***REMINDER: The top bar is completely useless!***
 ## Emulator Info
 The emulator used was **emulatorjs.**
+
 I did my best to remove the ads, but turns out I can't do anything about it.. Sorry! :(
 
 ### Credits
