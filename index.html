@@ -92,25 +92,42 @@
   /* GAME CAROUSEL fixed above all */
 .game-carousel {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 0;
+  right: 0;
+  top: 55%;
+  transform: translateY(-50%);
   z-index: 10;
   display: flex;
-  justify-content: center; /* Center the slots */
+  justify-content: flex-start; /* Allow slots to start at left */
   overflow-x: auto;
   scroll-behavior: smooth;
   gap: 20px;
-  padding: 10px 20px;
+  padding: 10px 8vw; /* Add horizontal padding to keep slots away from edges */
   scrollbar-width: none;
   border-radius: 12px;
   max-width: 100vw;
   max-height: 330px; /* keep height so it doesn’t grow too big */
+  background: none;
+  box-sizing: border-box;
 }
 
   .game-carousel::-webkit-scrollbar {
     display: none;
   }
+
+/* Prevent game slots from overflowing on small screens */
+@media (max-width: 900px) {
+  .game-carousel {
+    max-width: 100vw;
+    gap: 8px;
+    padding: 10px 2vw; /* Less padding on small screens */
+  }
+  .game-slot {
+    width: 180px;
+    height: 180px;
+    padding: 10px;
+  }
+}
 
 .game-slot {
   flex: 0 0 auto;
@@ -377,14 +394,34 @@ function playSound(sound) {
 // Games array
   const games = [
     { title: "Super Mario World", cover: "images/smw.png", rom: "roms/smw.zip" },
-    { title: "Zelda: A Link to the Past", cover: "images/zelda.png", rom: "roms/zelda.zip" },
+    { title: "Legend of Zelda, The - A Link to the Past", cover: "images/zelda.png", rom: "roms/zelda.zip" },
     { title: "Donkey Kong Country", cover: "images/dkc.png", rom: "roms/dkc.zip" },
+    { title: "F-Zero", cover: "images/F-Zero (USA).png", rom: "roms/F-ZERO (U) [!].zip" },
+    { title: "Kirby Super Star", cover: "images/Kirby Super Star (USA).png", rom: "roms/Kirby Super Star (U) [!].zip" },
+    { title: "Kirby's Dream Land 3", cover: "images/Kirby's Dream Land 3 (USA).png", rom: "roms/Kirby's Dream Land 3 (U).zip" },
+    { title: "Star Fox", cover: "images/Star Fox (USA).png", rom: "roms/Star Fox (U) (V1.2) [!].zip" },
+    { title: "Star Fox 2", cover: "images/Star Fox 2 (USA).png", rom: "roms/Star Fox 2 (USA).zip" }
   ];
 
   const carousel = document.getElementById('gameCarousel');
   const titleBar = document.querySelector('.title-bar');
   const gametitleBar = document.querySelector('.gametitle-bar .game-title-text');
   let selectedIndex = 0;
+
+  function scrollSelectedIntoView() {
+    const slots = document.querySelectorAll('.game-slot');
+    if (slots[selectedIndex]) {
+      const slot = slots[selectedIndex];
+      // Get the slot's position relative to the carousel's scroll area
+      const slotRect = slot.getBoundingClientRect();
+      const carouselRect = carousel.getBoundingClientRect();
+      // Calculate the slot's center relative to the carousel
+      const slotCenter = slotRect.left - carouselRect.left + carousel.scrollLeft + slotRect.width / 2;
+      const carouselCenter = carousel.clientWidth / 2;
+      // Set scrollLeft so the slot is centered
+      carousel.scrollLeft = slotCenter - carouselCenter;
+    }
+  }
 
   function updateSelectedSlot() {
     const slots = document.querySelectorAll('.game-slot');
@@ -395,6 +432,7 @@ function playSound(sound) {
         slot.classList.remove('selected');
       }
     });
+    scrollSelectedIntoView();
   }
 
   function updateTitleBar(game) {
@@ -471,6 +509,7 @@ function playSound(sound) {
   }
 
   populateCarousel();
+  setTimeout(() => scrollSelectedIntoView(), 0); // Always scroll to the selected game on load
 
   // Infinite scroll illusion for carousel
   carousel.scrollLeft = 0;
@@ -484,18 +523,11 @@ function playSound(sound) {
     if (e.key === 'ArrowRight') {
       selectedIndex = (selectedIndex + 1) % games.length;
       updateTitleBar(games[selectedIndex]);
-      updateSelectedSlot();
-      // Focus the new selected slot
-      const slots = document.querySelectorAll('.game-slot');
-      if (slots[selectedIndex]) slots[selectedIndex].focus();
+      // Only focus in scrollSelectedIntoView
       playSound(soundScroll);
     } else if (e.key === 'ArrowLeft') {
       selectedIndex = (selectedIndex - 1 + games.length) % games.length;
       updateTitleBar(games[selectedIndex]);
-      updateSelectedSlot();
-      // Focus the new selected slot
-      const slots = document.querySelectorAll('.game-slot');
-      if (slots[selectedIndex]) slots[selectedIndex].focus();
       playSound(soundScroll);
     }
   });
