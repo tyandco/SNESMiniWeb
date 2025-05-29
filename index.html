@@ -666,19 +666,6 @@ function playSound(sound) {
     }, 2500);
 
     // Attempt to remove ad popups after emulator loads
-    setTimeout(() => {
-      // Remove any iframes or divs that look like ads inside the overlay
-      const adSelectors = [
-        'iframe[src*="ads"]',
-        'iframe[src*="adservice"]',
-        'iframe[src*="doubleclick"]',
-        'iframe[src*="googlesyndication"]',
-      ];
-      adSelectors.forEach(sel => {
-        document.querySelectorAll(sel).forEach(el => el.remove());
-      });
-    }, 2000);
-  }
 
   // Update centering logic to use selectedIndex
   function scrollSelectedIntoView() {
