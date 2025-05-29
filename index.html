@@ -2,11 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>SNES Mini Menu</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
+  
   html, body {
-    margin: 0; padding: 0; height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
     overflow-x: hidden;
     background: #1e1a17;
     font-family: 'Noto Sans', sans-serif;
@@ -41,13 +48,27 @@
   }
 
   /* Overlay bars */
-  .overlay-bars {
+  .overlay-bar {
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    left: 0;
+    width: 100%;
+    height: auto;
+    min-height: 0;
     pointer-events: none;
-    z-index: 10;
-    object-fit: fill;
+    z-index: 20;
+    object-fit: contain;
+  }
+  .overlay-bar-top {
+    top: 0;
+    object-position: top left;
+    height: auto;
+    min-height: 0;
+  }
+  .overlay-bar-bottom {
+    bottom: 0;
+    object-position: bottom left;
+    height: auto;
+    min-height: 0;
   }
 
   /* Centered text */
@@ -59,9 +80,12 @@
     color: white;
     width: 80%;
     font-size: 2em;
-    font-weight: bold;
     text-align: center;
     pointer-events: none;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
     text-shadow: 0 0 5px black;
   }
 
@@ -71,7 +95,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 9999;
+  z-index: 10;
   display: flex;
   justify-content: center; /* Center the slots */
   overflow-x: auto;
@@ -103,6 +127,7 @@
   color: white;
   transition: transform 0.3s ease;
   transform: scale(0.9); /* removed rotation */
+  cursor: pointer; /* Added cursor pointer */
 }
 
 /* New tinted background layer */
@@ -205,18 +230,57 @@
   font-family: 'Noto Sans', sans-serif;
 }
 
+/* New game title bar styles */
+.gametitle-bar {
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 64px;
+  background: url('gametitlebar.png') center center no-repeat;
+  background-size: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 21;
+  pointer-events: none;
+  border-radius: 15px;
+  image-rendering: pixelated;
+}
+.gametitle-bar .game-title-text {
+  color: #000;
+  font-size: 2em;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  text-align: center;
+  width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: auto;
+}
+
+.game-slot:focus {
+  outline: none;
+  box-shadow: none;
+}
 </style>
 </head>
 <body>
-<div class="title-bar">SNES Mini Menu</div>
-
 <div class="scrolling-wrapper">
   <div class="scrolling-strip">
     <img src="nintendo-classic-mini-uhd-4k-wallpaper.jpg" alt="Scrolling Background" />
     <img src="nintendo-classic-mini-uhd-4k-wallpaper.jpg" alt="Scrolling Background" />
   </div>
 
-  <img src="snesmini topandbottom.png" alt="Overlay Bars" class="overlay-bars" />
+  <!-- Separate top and bottom bars -->
+  <img src="topbar.png" alt="Top Bar" class="overlay-bar overlay-bar-top" />
+  <img src="bottombar.png" alt="Bottom Bar" class="overlay-bar overlay-bar-bottom" />
+
+  <!-- Game title bar below top bar -->
+  <div class="gametitle-bar"><span class="game-title-text"></span></div>
+
   <div class="centered-text"></div>
 
   <!-- GAME CAROUSEL fixed at bottom -->
@@ -268,6 +332,7 @@
 
   const carousel = document.getElementById('gameCarousel');
   const titleBar = document.querySelector('.title-bar');
+  const gametitleBar = document.querySelector('.gametitle-bar .game-title-text');
   let selectedIndex = 0;
 
   function updateSelectedSlot() {
@@ -283,7 +348,10 @@
 
   function updateTitleBar(game) {
     if (titleBar && game) {
-      titleBar.textContent = game.title;
+      titleBar.textContent = 'SNES Mini Menu';
+    }
+    if (gametitleBar && game) {
+      gametitleBar.textContent = game.title;
     }
     updateSelectedSlot();
   }
@@ -291,6 +359,8 @@
   function createGameSlot(game, index) {
     const slot = document.createElement('div');
     slot.classList.add('game-slot');
+    slot.setAttribute('role', 'button');
+    slot.tabIndex = 0;
     slot.innerHTML = `
       <div class="game-bg"></div>
       <div class="game-cover" style="margin-top:-10px;">
@@ -300,7 +370,6 @@
         <a href="${game.rom}" download style="display:none;">Download ROM</a>
       </div>
     `;
-    slot.tabIndex = 0;
     slot.addEventListener('focus', () => {
       updateTitleBar(game);
       selectedIndex = index;
@@ -317,6 +386,18 @@
       document.body.appendChild(anchor);
       anchor.click();
       document.body.removeChild(anchor);
+    });
+    // Add keydown event for Enter key to trigger download
+    slot.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.keyCode === 13 || e.keyCode === 32) {
+        const anchor = document.createElement('a');
+        anchor.href = game.rom;
+        anchor.download = "";
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        e.preventDefault();
+      }
     });
     return slot;
   }
@@ -342,11 +423,18 @@
     if (e.key === 'ArrowRight') {
       selectedIndex = (selectedIndex + 1) % games.length;
       updateTitleBar(games[selectedIndex]);
+      updateSelectedSlot();
+      // Focus the new selected slot
+      const slots = document.querySelectorAll('.game-slot');
+      if (slots[selectedIndex]) slots[selectedIndex].focus();
     } else if (e.key === 'ArrowLeft') {
       selectedIndex = (selectedIndex - 1 + games.length) % games.length;
       updateTitleBar(games[selectedIndex]);
+      updateSelectedSlot();
+      // Focus the new selected slot
+      const slots = document.querySelectorAll('.game-slot');
+      if (slots[selectedIndex]) slots[selectedIndex].focus();
     }
-    updateSelectedSlot();
   });
 </script>
 
