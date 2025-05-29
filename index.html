@@ -356,13 +356,14 @@
   window.addEventListener('click', startAudio, { once: true });
   window.addEventListener('keydown', startAudio, { once: true });
 
-  audio.addEventListener('timeupdate', () => {
+  function onAudioTimeUpdate() {
     if (audio.currentTime >= loopEnd - 0.05) {
       audio.pause();
       audio.currentTime = loopStart;
       audio.play().catch(e => console.error('Loop playback failed:', e));
     }
-  });
+  }
+  audio.addEventListener('timeupdate', onAudioTimeUpdate);
 
   // Lower background music volume
 audio.volume = 0.7; // Lower background music volume
@@ -545,11 +546,10 @@ function playSound(sound) {
   const existing = document.getElementById('emulator-container');
   if (existing) existing.remove();
   if (audio) {
+    audio.pause();
+    audio.removeEventListener('timeupdate', onAudioTimeUpdate);
+    audio.currentTime = 0;
     audio.volume = 0.0;
-    if (!audio.paused) {
-      audio.pause();
-      audio.currentTime = 0;
-    }
   }
   let romPath = localZipRoms[gameTitle] || gameRom;
   romPath = romPath.replace(/\\/g, '/');
