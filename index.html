@@ -609,8 +609,8 @@ function playSound(sound) {
   iframe.style.border = 'none';
   iframe.scrolling = 'no';
   iframe.allowFullscreen = true;
-  // Added autoplay in allow attribute
-  iframe.setAttribute('allow', 'autoplay; microphone; fullscreen');
+
+  iframe.setAttribute('allow', 'microphone; fullscreen');
   iframe.setAttribute('webkitallowfullscreen', 'true');
   iframe.setAttribute('mozallowfullscreen', 'true');
   iframe.src = 'https://www.emulatorjs.com/embed/content.html';
