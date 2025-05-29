@@ -673,11 +673,6 @@ function playSound(sound) {
         'iframe[src*="adservice"]',
         'iframe[src*="doubleclick"]',
         'iframe[src*="googlesyndication"]',
-        'div[id*="ejs-ads"]',
-        'div[class*="ejs-ads"]',
-        'div[style*="z-index: 2147483647"]',
-        'div[style*="position: fixed"]',
-        'div[style*="position: absolute"]'
       ];
       adSelectors.forEach(sel => {
         document.querySelectorAll(sel).forEach(el => el.remove());
