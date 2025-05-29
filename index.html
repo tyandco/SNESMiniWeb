@@ -542,130 +542,131 @@ function playSound(sound) {
   };
 
   function startEmulation(gameRom, gameTitle) {
-    
-    // Remove any existing emulator
-    let existing = document.getElementById('emulator-container');
-    if (existing) existing.remove();
+  // Remove duplicate prevention:
+  // - Remove: if (window.emulatorLaunched) return;
+  // - Remove: window.emulatorLaunched = true;
+  const existing = document.getElementById('emulator-container');
+  if (existing) existing.remove();
 
-    // Stop background music and lower volume to zero
-    if (audio) {
-      audio.volume = 0.0;
-      if (!audio.paused) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+  // Stop background music and lower volume to zero
+  if (audio) {
+    audio.volume = 0.0;
+    if (!audio.paused) {
+      audio.pause();
+      audio.currentTime = 0;
     }
+  }
 
-    // Use local .zip ROM if available, otherwise fallback to .smc/.sfc
-    let romPath = localZipRoms[gameTitle] || gameRom;
-    romPath = romPath.replace(/\\/g, '/');
+  // Use local .zip ROM if available, otherwise fallback to .smc/.sfc
+  let romPath = localZipRoms[gameTitle] || gameRom;
+  romPath = romPath.replace(/\\/g, '/');
 
-    // Create the emulator container
-    const container = document.createElement('div');
-    container.id = 'emulator-container';
-    container.style.position = 'fixed';
-    container.style.top = '0';
-    container.style.left = '0';
-    container.style.width = '100vw';
-    container.style.height = '100vh';
-    container.style.background = 'rgba(10,10,10,0.98)';
-    container.style.zIndex = '100000'; // emulator overlays carousel
-    container.style.display = 'flex';
-    container.style.flexDirection = 'column';
-    container.style.alignItems = 'stretch';
-    container.style.justifyContent = 'stretch';
-    container.style.padding = '0';
+  // Create the emulator container
+  const container = document.createElement('div');
+  container.id = 'emulator-container';
+  container.style.position = 'fixed';
+  container.style.top = '0';
+  container.style.left = '0';
+  container.style.width = '100vw';
+  container.style.height = '100vh';
+  container.style.background = 'rgba(10,10,10,0.98)';
+  container.style.zIndex = '100000'; // emulator overlays carousel
+  container.style.display = 'flex';
+  container.style.flexDirection = 'column';
+  container.style.alignItems = 'stretch';
+  container.style.justifyContent = 'stretch';
+  container.style.padding = '0';
 
-    const emuDivWrapper = document.createElement('div');
-    emuDivWrapper.style.background = '#111';
-    emuDivWrapper.style.borderRadius = '0';
-    emuDivWrapper.style.boxShadow = 'none';
-    emuDivWrapper.style.display = 'flex';
-    emuDivWrapper.style.alignItems = 'stretch';
-    emuDivWrapper.style.justifyContent = 'stretch';
-    emuDivWrapper.style.padding = '0';
-    emuDivWrapper.style.marginTop = '0';
-    emuDivWrapper.style.width = '100vw';
-    emuDivWrapper.style.height = '100vh';
-    emuDivWrapper.style.maxWidth = '100vw';
-    emuDivWrapper.style.maxHeight = '100vh';
+  const emuDivWrapper = document.createElement('div');
+  emuDivWrapper.style.background = '#111';
+  emuDivWrapper.style.borderRadius = '0';
+  emuDivWrapper.style.boxShadow = 'none';
+  emuDivWrapper.style.display = 'flex';
+  emuDivWrapper.style.alignItems = 'stretch';
+  emuDivWrapper.style.justifyContent = 'stretch';
+  emuDivWrapper.style.padding = '0';
+  emuDivWrapper.style.marginTop = '0';
+  emuDivWrapper.style.width = '100vw';
+  emuDivWrapper.style.height = '100vh';
+  emuDivWrapper.style.maxWidth = '100vw';
+  emuDivWrapper.style.maxHeight = '100vh';
 
-    const emuDiv = document.createElement('div');
-    emuDiv.id = 'emujs-game';
-    emuDiv.style.width = '100vw';
-    emuDiv.style.height = '100vh';
-    emuDiv.style.maxWidth = '100vw';
-    emuDiv.style.maxHeight = '100vh';
-    emuDiv.style.display = 'flex';
-    emuDiv.style.alignItems = 'stretch';
-    emuDiv.style.justifyContent = 'stretch';
+  const emuDiv = document.createElement('div');
+  emuDiv.id = 'emujs-game';
+  emuDiv.style.width = '100vw';
+  emuDiv.style.height = '100vh';
+  emuDiv.style.maxWidth = '100vw';
+  emuDiv.style.maxHeight = '100vh';
+  emuDiv.style.display = 'flex';
+  emuDiv.style.alignItems = 'stretch';
+  emuDiv.style.justifyContent = 'stretch';
 
-    // Create the iframe as EmulatorJS does
-    const iframe = document.createElement('iframe');
-    iframe.id = 'ejs-content-frame';
-    iframe.width = '100%';
-    iframe.height = '100%';
-    iframe.frameBorder = 'no';
-    iframe.style.width = '100vw';
-    iframe.style.height = '100vh';
-    iframe.style.margin = '0';
-    iframe.style.padding = '0';
-    iframe.style.userSelect = 'none';
-    iframe.style.border = 'none';
-    iframe.scrolling = 'no';
-    iframe.allowFullscreen = true;
-    // Added autoplay in allow attribute
-    iframe.setAttribute('allow', 'autoplay; microphone; fullscreen');
-    iframe.setAttribute('webkitallowfullscreen', 'true');
-    iframe.setAttribute('mozallowfullscreen', 'true');
-    iframe.src = 'https://www.emulatorjs.com/embed/content.html';
-    emuDiv.appendChild(iframe);
-    emuDivWrapper.appendChild(emuDiv);
-    container.appendChild(emuDivWrapper);
-    document.body.appendChild(container);
+  // Create the iframe as EmulatorJS does
+  const iframe = document.createElement('iframe');
+  iframe.id = 'ejs-content-frame';
+  iframe.width = '100%';
+  iframe.height = '100%';
+  iframe.frameBorder = 'no';
+  iframe.style.width = '100vw';
+  iframe.style.height = '100vh';
+  iframe.style.margin = '0';
+  iframe.style.padding = '0';
+  iframe.style.userSelect = 'none';
+  iframe.style.border = 'none';
+  iframe.scrolling = 'no';
+  iframe.allowFullscreen = true;
+  // Added autoplay in allow attribute
+  iframe.setAttribute('allow', 'autoplay; microphone; fullscreen');
+  iframe.setAttribute('webkitallowfullscreen', 'true');
+  iframe.setAttribute('mozallowfullscreen', 'true');
+  iframe.src = 'https://www.emulatorjs.com/embed/content.html';
+  emuDiv.appendChild(iframe);
+  emuDivWrapper.appendChild(emuDiv);
+  container.appendChild(emuDivWrapper);
+  document.body.appendChild(container);
 
-    // Remove any previous EmulatorJS loader/config
-    const oldLoader = document.getElementById('emujs-loader');
-    if (oldLoader) oldLoader.remove();
-    const oldVars = document.getElementById('emujs-vars');
-    if (oldVars) oldVars.remove();
+  // Remove any previous EmulatorJS loader/config
+  const oldLoader = document.getElementById('emujs-loader');
+  if (oldLoader) oldLoader.remove();
+  const oldVars = document.getElementById('emujs-vars');
+  if (oldVars) oldVars.remove();
 
-    // Set EmulatorJS config as window variables
-    const scriptVars = document.createElement('script');
-    scriptVars.type = 'text/javascript';
-    scriptVars.id = 'emujs-vars';
-    scriptVars.textContent = `
-      window.EJS_player = '#emujs-game';
-      window.EJS_gameUrl = '${romPath}';
-      window.EJS_core = 'bsnes';
-      window.EJS_mouse = false;
-      window.EJS_multitap = false;
-      window.EJS_startOnLoaded = true;
-      window.EJS_autostart = true;
-      window.EJS_pathtodata = 'https://www.emulatorjs.com/data/';
-    `;
-    document.body.appendChild(scriptVars);
+  // Set EmulatorJS config as window variables
+  const scriptVars = document.createElement('script');
+  scriptVars.type = 'text/javascript';
+  scriptVars.id = 'emujs-vars';
+  scriptVars.textContent = `
+    window.EJS_player = '#emujs-game';
+    window.EJS_gameUrl = '${romPath}';
+    window.EJS_core = 'bsnes';
+    window.EJS_mouse = false;
+    window.EJS_multitap = false;
+    window.EJS_startOnLoaded = true;
+    window.EJS_autostart = true;
+    window.EJS_pathtodata = 'https://www.emulatorjs.com/data/';
+  `;
+  document.body.appendChild(scriptVars);
 
-    // Load EmulatorJS loader.js
-    const scriptLoader = document.createElement('script');
-    scriptLoader.src = 'https://www.emulatorjs.com/loader.js';
-    scriptLoader.type = 'text/javascript';
-    scriptLoader.id = 'emujs-loader';
-    scriptLoader.crossOrigin = 'anonymous';
-    document.body.appendChild(scriptLoader);
+  // Load EmulatorJS loader.js
+  const scriptLoader = document.createElement('script');
+  scriptLoader.src = 'https://www.emulatorjs.com/loader.js';
+  scriptLoader.type = 'text/javascript';
+  scriptLoader.id = 'emujs-loader';
+  scriptLoader.crossOrigin = 'anonymous';
+  document.body.appendChild(scriptLoader);
 
-    // Fallback: force game load via postMessage if not started after 2.5s
-    setTimeout(() => {
-      const emuFrame = document.getElementById('ejs-content-frame');
-      if (emuFrame && emuFrame.contentWindow) {
-        emuFrame.contentWindow.postMessage({
-          type: 'EJS_loadGame',
-          url: romPath,
-          core: 'bsnes',
-          autostart: true
-        }, '*');
-      }
-    }, 2500);
+  // Fallback: force game load via postMessage if not started after 2.5s
+  setTimeout(() => {
+    const emuFrame = document.getElementById('ejs-content-frame');
+    if (emuFrame && emuFrame.contentWindow) {
+      emuFrame.contentWindow.postMessage({
+        type: 'EJS_loadGame',
+        url: romPath,
+        core: 'bsnes',
+        autostart: true
+      }, '*');
+    }
+  }, 2500);
     }
     // Attempt to remove ad popups after emulator loads
 
