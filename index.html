@@ -233,11 +233,14 @@
 /* New game title bar styles */
 .gametitle-bar {
   position: absolute;
-  top: 120px;
+  top: 8vw; /* Responsive distance from top, scales with viewport width */
   left: 50%;
   transform: translateX(-50%);
-  width: 600px;
-  height: 64px;
+  width: 70vw;
+  max-width: 70vw;
+  height: 6vw;
+  max-height: 80px;
+  min-height: 40px;
   background: url('gametitlebar.png') center center no-repeat;
   background-size: contain;
   display: flex;
@@ -245,12 +248,12 @@
   justify-content: center;
   z-index: 21;
   pointer-events: none;
-  border-radius: 15px;
-  image-rendering: pixelated;
+  box-sizing: border-box;
+  padding: 0 8vw;
 }
 .gametitle-bar .game-title-text {
   color: #000;
-  font-size: 2em;
+  font-size: clamp(1.2em, 2.5vw, 2.2em);
   font-family: "Inter", sans-serif;
   font-weight: 400;
   text-align: center;
@@ -260,7 +263,20 @@
   text-overflow: ellipsis;
   pointer-events: auto;
 }
+@media (max-width: 700px) {
+  .gametitle-bar {
+    width: 94vw;
+    max-width: 94vw;
+    height: 12vw;
+    min-height: 32px;
+    padding: 0 2vw;
+  }
+  .gametitle-bar .game-title-text {
+    font-size: clamp(1em, 4vw, 1.8em);
+  }
+}
 
+/* Focus outline for accessibility */
 .game-slot:focus {
   outline: none;
   box-shadow: none;
@@ -290,6 +306,8 @@
 <audio id="bg-music" preload="auto" style="display:none;">
   <source src="02. Main Menu (SNES Classic Edition).mp3" type="audio/mpeg" />
 </audio>
+<audio id="sound-scroll" preload="auto" src="sounds/se_sys_click.wav" style="display:none;"></audio>
+<audio id="sound-click" preload="auto" src="sounds/se_sys_click_game.wav" style="display:none;"></audio>
 
 <script>
   // Audio loop setup
@@ -323,7 +341,40 @@
     }
   });
 
-  // Games array
+  // Lower background music volume
+audio.volume = 0.7; // Lower background music volume
+const soundScroll = document.getElementById('sound-scroll');
+const soundClick = document.getElementById('sound-click');
+soundScroll.volume = 1.0; // Max volume for sound effects
+soundClick.volume = 1.0;
+
+// Ensure sounds are loaded and can play after user gesture
+function unlockAudio(audioEl) {
+  if (!audioEl) return;
+  // Try to play and immediately pause to unlock
+  audioEl.volume = 1;
+  audioEl.currentTime = 0;
+  audioEl.play().then(() => audioEl.pause()).catch(() => {});
+}
+
+function unlockAllAudio() {
+  unlockAudio(soundScroll);
+  unlockAudio(soundClick);
+}
+
+window.addEventListener('click', unlockAllAudio, { once: true });
+window.addEventListener('keydown', unlockAllAudio, { once: true });
+
+function playSound(sound) {
+  if (!sound) return;
+  try {
+    sound.pause();
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
+  } catch (e) {}
+}
+
+// Games array
   const games = [
     { title: "Super Mario World", cover: "images/smw.png", rom: "roms/smw.zip" },
     { title: "Zelda: A Link to the Past", cover: "images/zelda.png", rom: "roms/zelda.zip" },
@@ -379,24 +430,34 @@
       selectedIndex = index;
     });
     // New click event to download the ROM when clicking the slot
-    slot.addEventListener('click', () => {
-      const anchor = document.createElement('a');
-      anchor.href = game.rom;
-      anchor.download = "";
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-    });
-    // Add keydown event for Enter key to trigger download
-    slot.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ' || e.keyCode === 13 || e.keyCode === 32) {
+    slot.addEventListener('click', (e) => {
+      playSound(soundClick);
+      // Use a real anchor and trigger click after a short delay to allow sound
+      setTimeout(() => {
         const anchor = document.createElement('a');
         anchor.href = game.rom;
-        anchor.download = "";
+        anchor.setAttribute('download', '');
         document.body.appendChild(anchor);
-        anchor.click();
+        // For Chrome: must be user-initiated, so use MouseEvent
+        anchor.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
         document.body.removeChild(anchor);
+      }, 120);
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    slot.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.keyCode === 13 || e.keyCode === 32) {
+        playSound(soundClick);
+        setTimeout(() => {
+          const anchor = document.createElement('a');
+          anchor.href = game.rom;
+          anchor.setAttribute('download', '');
+          document.body.appendChild(anchor);
+          anchor.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
+          document.body.removeChild(anchor);
+        }, 120);
         e.preventDefault();
+        e.stopPropagation();
       }
     });
     return slot;
@@ -427,6 +488,7 @@
       // Focus the new selected slot
       const slots = document.querySelectorAll('.game-slot');
       if (slots[selectedIndex]) slots[selectedIndex].focus();
+      playSound(soundScroll);
     } else if (e.key === 'ArrowLeft') {
       selectedIndex = (selectedIndex - 1 + games.length) % games.length;
       updateTitleBar(games[selectedIndex]);
@@ -434,6 +496,7 @@
       // Focus the new selected slot
       const slots = document.querySelectorAll('.game-slot');
       if (slots[selectedIndex]) slots[selectedIndex].focus();
+      playSound(soundScroll);
     }
   });
 </script>
