@@ -542,6 +542,10 @@ function playSound(sound) {
   };
 
   function startEmulation(gameRom, gameTitle) {
+    // Prevent duplicate emulator launches
+    if (window.emulatorLaunched) return;
+    window.emulatorLaunched = true;
+    
     // Remove any existing emulator
     let existing = document.getElementById('emulator-container');
     if (existing) existing.remove();
@@ -613,9 +617,10 @@ function playSound(sound) {
     iframe.style.border = 'none';
     iframe.scrolling = 'no';
     iframe.allowFullscreen = true;
+    // Added autoplay in allow attribute
+    iframe.setAttribute('allow', 'autoplay; microphone; fullscreen');
     iframe.setAttribute('webkitallowfullscreen', 'true');
     iframe.setAttribute('mozallowfullscreen', 'true');
-    iframe.setAttribute('allow', 'microphone');
     iframe.src = 'https://www.emulatorjs.com/embed/content.html';
     emuDiv.appendChild(iframe);
     emuDivWrapper.appendChild(emuDiv);
