@@ -558,7 +558,7 @@ function playSound(sound) {
         audio.currentTime = 0;
       }
     }
-  }
+
     // Use local .zip ROM if available, otherwise fallback to .smc/.sfc
     let romPath = localZipRoms[gameTitle] || gameRom;
     romPath = romPath.replace(/\\/g, '/');
@@ -572,7 +572,7 @@ function playSound(sound) {
     container.style.width = '100vw';
     container.style.height = '100vh';
     container.style.background = 'rgba(10,10,10,0.98)';
-    container.style.zIndex = '99999';
+    container.style.zIndex = '100000'; // emulator overlays carousel
     container.style.display = 'flex';
     container.style.flexDirection = 'column';
     container.style.alignItems = 'stretch';
@@ -687,7 +687,7 @@ function playSound(sound) {
         }, '*');
       }
     }, 2500);
-
+    }
     // Attempt to remove ad popups after emulator loads
 
   // Update centering logic to use selectedIndex
