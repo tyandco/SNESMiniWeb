@@ -558,7 +558,7 @@ function playSound(sound) {
         audio.currentTime = 0;
       }
     }
-
+  }
     // Use local .zip ROM if available, otherwise fallback to .smc/.sfc
     let romPath = localZipRoms[gameTitle] || gameRom;
     romPath = romPath.replace(/\\/g, '/');
