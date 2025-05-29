@@ -542,9 +542,6 @@ function playSound(sound) {
   };
 
   function startEmulation(gameRom, gameTitle) {
-    // Prevent duplicate emulator launches
-    if (window.emulatorLaunched) return;
-    window.emulatorLaunched = true;
     
     // Remove any existing emulator
     let existing = document.getElementById('emulator-container');
@@ -578,24 +575,6 @@ function playSound(sound) {
     container.style.alignItems = 'stretch';
     container.style.justifyContent = 'stretch';
     container.style.padding = '0';
-
-    // NEW: Add a close button to dismiss the emulator overlay
-    const closeButton = document.createElement('button');
-    closeButton.textContent = 'Close';
-    closeButton.style.position = 'absolute';
-    closeButton.style.top = '10px';
-    closeButton.style.right = '10px';
-    closeButton.style.zIndex = '100000';
-    closeButton.style.padding = '10px';
-    closeButton.style.fontSize = '16px';
-    closeButton.addEventListener('click', () => {
-      container.remove();
-      window.emulatorLaunched = false;
-      // Restore background music volume and resume playback if desired
-      audio.volume = 0.7;
-      audio.play().catch(() => {});
-    });
-    container.appendChild(closeButton);
 
     const emuDivWrapper = document.createElement('div');
     emuDivWrapper.style.background = '#111';
