@@ -545,10 +545,23 @@ function playSound(sound) {
     "Super Punch-Out!!": "roms/Super Punch-Out!! (U) [!].smc"
   };
 
+  // New helper function to configure EmulatorJS
+function configureEmulator(romPath) {
+  window.EJS_config = {
+    player: "#emujs-game",
+    gameUrl: romPath,
+    core: "bsnes",
+    mouse: false,
+    multitap: false,
+    startOnLoaded: true,
+    pathtodata: "https://www.emulatorjs.com/data/"
+  };
+}
+
   function startEmulation(gameRom, gameTitle) {
     // Remove any existing emulator
-    let existing = document.getElementById('emulator-container');
-    if (existing) existing.remove();
+    let existingEmulator = document.getElementById('emulator-container');
+    if (existingEmulator) existingEmulator.remove();
 
     // Stop background music and lower volume to zero
     if (audio) {
@@ -563,6 +576,16 @@ function playSound(sound) {
     let romPath = localZipRoms[gameTitle] || gameRom;
     // EmulatorJS expects forward slashes and no escaped characters in URLs
     romPath = romPath.replace(/\\/g, '/');
+    console.log("Launching game:", gameTitle, "Using ROM:", romPath);
+    
+    // Remove previous emulator, loader and config if any
+    let existing = document.getElementById('emulator-container');
+    if (existing) existing.remove();
+    const oldLoader = document.getElementById('emujs-loader');
+    if (oldLoader) oldLoader.remove();
+    
+    // Configure EmulatorJS via our helper
+    configureEmulator(romPath);
 
     // EmulatorJS embed (bsnes core)
     const container = document.createElement('div');
@@ -622,33 +645,12 @@ function playSound(sound) {
     container.appendChild(emuDivWrapper);
     document.body.appendChild(container);
 
-    // Remove any previous EmulatorJS loader/config
-    const oldLoader = document.getElementById('emujs-loader');
-    if (oldLoader) oldLoader.remove();
-    const oldVars = document.getElementById('emujs-vars');
-    if (oldVars) oldVars.remove();
-
-    // Set EmulatorJS config as window variables
-    const scriptVars = document.createElement('script');
-    scriptVars.type = 'text/javascript';
-    scriptVars.id = 'emujs-vars';
-    scriptVars.textContent = `
-      window.EJS_player = '#emujs-game';
-      window.EJS_gameUrl = '${romPath}';
-      window.EJS_core = 'bsnes';
-      window.EJS_mouse = false;
-      window.EJS_multitap = false;
-      window.EJS_startOnLoaded = true;
-      window.EJS_pathtodata = 'https://www.emulatorjs.com/data/';
-    `;
-    document.body.appendChild(scriptVars);
-
     // Load EmulatorJS loader.js
     const scriptLoader = document.createElement('script');
-    scriptLoader.src = 'https://www.emulatorjs.com/loader.js';
-    scriptLoader.type = 'text/javascript';
-    scriptLoader.id = 'emujs-loader';
-    scriptLoader.crossOrigin = 'anonymous';
+    scriptLoader.src = "https://www.emulatorjs.com/loader.js";
+    scriptLoader.type = "text/javascript";
+    scriptLoader.id = "emujs-loader";
+    scriptLoader.crossOrigin = "anonymous";
     document.body.appendChild(scriptLoader);
   }
 
