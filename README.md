@@ -36,6 +36,8 @@ The emulator used was **emulatorjs.**
 
 I did my best to remove the ads, but turns out I can't do anything about it.. Sorry! :(
 
+**NOTE - I'm aware that some games don't work, if you're willing to help then contact me on my discord: tyandco_**
+
 ### Credits
 TY and Co. - Developer
 
