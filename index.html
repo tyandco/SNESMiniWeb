@@ -123,18 +123,19 @@
     padding: 10px 2vw; /* Less padding on small screens */
   }
   .game-slot {
-    width: 180px;
-    height: 180px;
+    /* Responsive sizes for small screens */
+    width: clamp(150px, 25vw, 300px);
+    height: clamp(160px, 27vw, 320px);
     padding: 10px;
   }
 }
 
 .game-slot {
+  /* Responsive game slot dimensions */
   flex: 0 0 auto;
-  width: 260px;   /* bigger width */
-  height: 280px;  /* bigger height */
-  /* Removed background-image settings */
-  padding: 20px;
+  width: clamp(150px, 20vw, 300px);
+  height: clamp(160px, 22vw, 320px);
+  padding: 10px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -143,7 +144,7 @@
   position: relative;
   color: white;
   transition: transform 0.3s ease;
-  transform: scale(0.9); /* removed rotation */
+  transform: scale(0.9);
   cursor: pointer; /* Added cursor pointer */
 }
 
@@ -187,19 +188,21 @@
 }
 
 .game-cover {
+  /* Center the game cover within the slot */
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 25px;
+  margin: 20px auto auto auto;  /* added negative top margin to lift cover */
   width: 100%;
-  height: 370px; /* set a fixed height for vertical centering */
+  height: 70%; /* Adjust based on slot scaling */
   box-sizing: border-box;
+  position: relative;
   z-index: 2;
 }
 
 .game-cover img {
   max-width: 100%;
-  max-height: 370px;
+  max-height: 100%; /* Ensure image scales within container */
   display: block;
   object-fit: contain;
   z-index: 3;
@@ -457,7 +460,7 @@ function playSound(sound) {
     slot.tabIndex = 0;
     slot.innerHTML = `
       <div class="game-bg"></div>
-      <div class="game-cover" style="margin-top:-10px;">
+      <div class="game-cover">
         <img src="${game.cover}" alt="${game.title}">
       </div>
       <div class="game-info"></div>
@@ -518,47 +521,33 @@ function playSound(sound) {
   };
 
   // Map local game titles to local .zip ROMs in the roms/ folder
-  // Updated localZipRoms mapping using double quotes to handle apostrophes
   const localZipRoms = {
-    "Super Mario World": "roms/smw.zip",
-    "Legend of Zelda, The - A Link to the Past": "roms/Legend of Zelda, The - A Link to the Past (U) [!].smc",
-    "Donkey Kong Country": "roms/dkc.zip",
-    "F-Zero": "roms/F-ZERO (U) [!].smc",
-    "Kirby Super Star": "roms/Kirby Super Star (U) [!].smc",
-    "Kirby's Dream Land 3": "roms/Kirby's Dream Land 3 (U).smc",
-    "Star Fox": "roms/Star Fox (U) (V1.2) [!].smc",
-    "Star Fox 2": "roms/Star Fox 2 (USA).smc",
-    "Contra III - The Alien Wars": "roms/Contra III - The Alien Wars (U) [!].smc",
-    "EarthBound": "roms/Earthbound (U) [!].smc",
-    "Final Fantasy III": "roms/Final Fantasy III (U) (V1.1) [!].smc",
-    "Mega Man X": "roms/Mega Man X (U) (V1.1) [!].smc",
-    "Secret of Mana": "roms/Secret of Mana (U) [!].smc",
-    "Super Castlevania IV": "roms/Super Castlevania IV (U) [!].smc",
-    "Super Ghouls 'n Ghosts": "roms/Super Ghouls 'N Ghosts (U) [!].smc",
-    "Super Mario Kart": "roms/Super Mario Kart (U) [!].smc",
-    "Super Mario RPG - Legend of the Seven Stars": "roms/Super Mario RPG - Legend of the Seven Stars (U) [!].smc",
-    "Super Mario World 2 - Yoshi's Island": "roms/Super Mario World 2 - Yoshi's Island (U) (M3) (V1.1).smc",
-    "Super Metroid": "roms/Super Metroid (USA, Europe) (En,Ja) (Virtual Console, Classic Mini, Switch Online).smc",
-    "Super Punch-Out!!": "roms/Super Punch-Out!! (U) [!].smc"
+    'Super Mario World': 'roms/smw.zip',
+    'Legend of Zelda, The - A Link to the Past': 'roms/Legend of Zelda, The - A Link to the Past (U) [!].smc', // no zip, use .smc
+    'Donkey Kong Country': 'roms/dkc.zip',
+    'F-Zero': 'roms/F-ZERO (U) [!].zip',
+    "Kirby Super Star": 'roms/Kirby Super Star (U) [!].zip',
+    "Kirby's Dream Land 3": 'roms/Kirby\'s Dream Land 3 (U).zip', // fallback to .smc if no zip
+    'Star Fox': 'roms/Star Fox (U) (V1.2) [!].zip',
+    'Star Fox 2': 'roms/Star Fox 2 (USA).zip',
+    'Contra III - The Alien Wars': 'roms/Contra III - The Alien Wars (U) [!].zip',
+    'EarthBound': 'roms/Earthbound (U) [!].zip',
+    'Final Fantasy III': 'roms/Final Fantasy III (U) (V1.1) [!].zip',
+    'Mega Man X': 'roms/Mega Man X (U) (V1.1) [!].zip',
+    'Secret of Mana': 'roms/Secret of Mana (U) [!].zip',
+    'Super Castlevania IV': 'roms/Super Castlevania IV (U) [!].zip',
+    "Super Ghouls 'n Ghosts": 'roms/Super Ghouls \'N Ghosts (U) [!].zip',
+    'Super Mario Kart': 'roms/Super Mario Kart (U) [!].zip',
+    'Super Mario RPG - Legend of the Seven Stars': 'roms/Super Mario RPG - Legend of the Seven Stars (U) [!].zip',
+    "Super Mario World 2 - Yoshi's Island": 'roms/Super Mario World 2 - Yoshi\'s Island (U) (M3) (V1.1).zip',
+    'Super Metroid': 'roms/Super Metroid (USA, Europe) (En,Ja) (Virtual Console, Classic Mini, Switch Online).smc', // no zip, use .smc
+    'Super Punch-Out!!': 'roms/Super Punch-Out!! (U) [!].zip'
   };
-
-  // New helper function to configure EmulatorJS
-function configureEmulator(romPath) {
-  window.EJS_config = {
-    player: "#emujs-game",
-    gameUrl: romPath,
-    core: "bsnes",
-    mouse: false,
-    multitap: false,
-    startOnLoaded: true,
-    pathtodata: "https://www.emulatorjs.com/data/"
-  };
-}
 
   function startEmulation(gameRom, gameTitle) {
     // Remove any existing emulator
-    let existingEmulator = document.getElementById('emulator-container');
-    if (existingEmulator) existingEmulator.remove();
+    let existing = document.getElementById('emulator-container');
+    if (existing) existing.remove();
 
     // Stop background music and lower volume to zero
     if (audio) {
@@ -573,16 +562,6 @@ function configureEmulator(romPath) {
     let romPath = localZipRoms[gameTitle] || gameRom;
     // EmulatorJS expects forward slashes and no escaped characters in URLs
     romPath = romPath.replace(/\\/g, '/');
-    console.log("Launching game:", gameTitle, "Using ROM:", romPath);
-    
-    // Remove previous emulator, loader and config if any
-    let existing = document.getElementById('emulator-container');
-    if (existing) existing.remove();
-    const oldLoader = document.getElementById('emujs-loader');
-    if (oldLoader) oldLoader.remove();
-    
-    // Configure EmulatorJS via our helper
-    configureEmulator(romPath);
 
     // EmulatorJS embed (bsnes core)
     const container = document.createElement('div');
@@ -642,12 +621,33 @@ function configureEmulator(romPath) {
     container.appendChild(emuDivWrapper);
     document.body.appendChild(container);
 
+    // Remove any previous EmulatorJS loader/config
+    const oldLoader = document.getElementById('emujs-loader');
+    if (oldLoader) oldLoader.remove();
+    const oldVars = document.getElementById('emujs-vars');
+    if (oldVars) oldVars.remove();
+
+    // Set EmulatorJS config as window variables
+    const scriptVars = document.createElement('script');
+    scriptVars.type = 'text/javascript';
+    scriptVars.id = 'emujs-vars';
+    scriptVars.textContent = `
+      window.EJS_player = '#emujs-game';
+      window.EJS_gameUrl = '${romPath}';
+      window.EJS_core = 'bsnes';
+      window.EJS_mouse = false;
+      window.EJS_multitap = false;
+      window.EJS_startOnLoaded = true;
+      window.EJS_pathtodata = 'https://www.emulatorjs.com/data/';
+    `;
+    document.body.appendChild(scriptVars);
+
     // Load EmulatorJS loader.js
     const scriptLoader = document.createElement('script');
-    scriptLoader.src = "https://www.emulatorjs.com/loader.js";
-    scriptLoader.type = "text/javascript";
-    scriptLoader.id = "emujs-loader";
-    scriptLoader.crossOrigin = "anonymous";
+    scriptLoader.src = 'https://www.emulatorjs.com/loader.js';
+    scriptLoader.type = 'text/javascript';
+    scriptLoader.id = 'emujs-loader';
+    scriptLoader.crossOrigin = 'anonymous';
     document.body.appendChild(scriptLoader);
   }
 
@@ -720,31 +720,6 @@ function configureEmulator(romPath) {
       }, 120);
     }
   });
-
-  // Recheck the ROM filenames in the directory:
-const expectedRomFiles = [
-  "smw.smc",
-  "Legend of Zelda, The - A Link to the Past (U) [!].smc",
-  "dkc.smc",
-  "F-ZERO (U) [!].smc",
-  "Kirby Super Star (U) [!].smc",
-  "Kirby's Dream Land 3 (U).smc",
-  "Star Fox (U) (V1.2) [!].smc",
-  "Star Fox 2 (USA).smc",
-  "Contra III - The Alien Wars (U) [!].smc",
-  "Earthbound (U) [!].smc",
-  "Final Fantasy III (U) (V1.1) [!].smc",
-  "Mega Man X (U) (V1.1) [!].smc",
-  "Secret of Mana (U) [!].smc",
-  "Super Castlevania IV (U) [!].smc",
-  "Super Ghouls 'N Ghosts (U) [!].smc",
-  "Super Mario Kart (U) [!].smc",
-  "Super Mario RPG - Legend of the Seven Stars (U) [!].smc",
-  "Super Mario World 2 - Yoshi's Island (U) (M3) (V1.1).smc",
-  "Super Metroid (USA, Europe) (En,Ja) (Virtual Console, Classic Mini, Switch Online).smc",
-  "Super Punch-Out!! (U) [!].smc"
-];
-console.log("Expected ROM filenames:", expectedRomFiles);
 </script>
 
 </body>
